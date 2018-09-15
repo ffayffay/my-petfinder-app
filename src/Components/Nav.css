@@ -1,0 +1,15 @@
+.nav {
+	display: flex;
+	height: 15%;
+	width: 100%;
+	justify-content: space-around;
+	background-color: lightblue;
+}
+
+.sub-menu {
+	background-color: pink;
+}
+
+.sub-menu-button {
+	background-color: limegreen;
+}

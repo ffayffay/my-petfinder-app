@@ -1,0 +1,23 @@
+.pet-card-content-wrap {
+	margin: 10%;
+}
+
+.card-img {
+	display: flex;
+    max-width: 300px;
+    margin: auto;
+    border: 3px solid white;
+}
+
+img {
+	height: 100%;
+	width: 100%;
+}
+
+ul {
+	list-style: none;
+}
+
+.description-wrap {
+	max-width: 800px;
+}
