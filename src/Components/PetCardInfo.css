@@ -20,4 +20,12 @@ ul {
 
 .description-wrap {
 	max-width: 800px;
+	max-height: 150px;
+}
+
+.read-more {
+	max-height: 200px;
+	white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

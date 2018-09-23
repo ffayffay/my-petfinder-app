@@ -1,5 +1,6 @@
 import React from 'react';
 import './Nav.css';
+import adopt from '../adopt.png';
 
 export default class Nav extends React.Component {
 	constructor(props) {
@@ -19,15 +20,14 @@ export default class Nav extends React.Component {
 	render() {
 		return (
 			<nav className="nav">
-				<h1>Nav</h1>
-				<button className="sub-menu-button"
-					onClick={() => this.toggleSubMenu()}>{this.state.isSubMenuShown ? 'Hide' : 'show'}</button>
-				{this.state.isSubMenuShown
-				? (<div className="sub-menu">
-					<a>samson</a>
-				   </div>)
-				: ''}
-				
+				<div className="img-container">
+					<img src={ adopt } />
+				</div>
+
+				<div className="nav-links">
+					<a href="">Random Pet</a>
+					<a href="">Advanced Search</a>
+				</div>
 			</nav>
 		)
 		
