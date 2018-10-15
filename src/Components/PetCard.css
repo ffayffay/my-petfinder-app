@@ -1,5 +1,6 @@
 .pet-card {
-	background-color: hotpink;
+	background-image: url("https://www.publicdomainpictures.net/pictures/40000/nahled/paw-prints-background.jpg");
+	border: 10px solid black;
 	text-align: center;
 	margin: 5%;
 }

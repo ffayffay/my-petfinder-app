@@ -19,4 +19,7 @@
 	padding: 15px;
 	font-size: large;
 	background-color: lime;
+	top: 160px;
+	left: 10px;
+	position: fixed;
 }

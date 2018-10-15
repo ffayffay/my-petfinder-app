@@ -1,0 +1,14 @@
+.empty-card-info {
+	width: 600px;
+}
+
+.empty-card-img {
+	display: flex;
+    max-width: 500px;
+    margin: auto;
+}
+
+img {
+	height: 100%;
+	width: 100%;
+}

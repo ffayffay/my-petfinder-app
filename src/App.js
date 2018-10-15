@@ -14,10 +14,35 @@ class App extends Component {
     this.state = {
       // used in isPetEmpty function to check if pet is equal to a pet
       pet: '-',
-      featPet: '-'
+      featCat: '-',
+      featDog: '-'
     }
   }
 
+
+
+// FEATURED PET ***************************************
+  getCatFeatPet() {
+    jpp(`http://api.petfinder.com/pet.find?format=json&key=30813f445b233300ac28d89179cd71c7&animal=cat&location=47130`)
+      .then(res => console.log(res))
+  }
+
+  getDogFeatPet() {
+    jpp(`http://api.petfinder.com/pet.find?format=json&key=30813f445b233300ac28d89179cd71c7&animal=dog&location=47130`)
+      .then(res => console.log(res))
+  }
+
+    setFeaturedPet(featPet) {
+    this.setState({
+      featCat: featCat,
+      featDog: featDog
+    })
+   }
+
+// ***************************************************
+
+
+// RANDOM PET ****************************************
 // requesting a pet ID from the api
   getRandomPetId() {
     return jpp('http://api.petfinder.com/pet.getRandom?format=json&key=30813f445b233300ac28d89179cd71c7')
@@ -29,12 +54,6 @@ class App extends Component {
     return jpp(`http://api.petfinder.com/pet.get?format=json&key=30813f445b233300ac28d89179cd71c7&id=${id}`)
       .then(res => this.formatPetResponse(res))
 
-  }
-
-  setFeaturedPet(featPet) {
-    this.setState({
-      featPet: featPet
-    })
   }
 
   setPet(pet) {
@@ -87,11 +106,6 @@ class App extends Component {
       }
   }
 
-  // getFeatPet() {
-  //   this.getRandomPetId()
-  //       .then(id => this.getPetDetails(id))
-  //       .then(featPet => this.setFeaturedPet(featPet))
-  // }
 
   getPet() {
     this.getRandomPetId()
@@ -99,11 +113,6 @@ class App extends Component {
         .then(pet => this.setPet(pet))
   }
   
-  // isFeatPetEmpty() {
-  //   if(this.state.featPet === '-') return false
-  //   if(!this.state.featPet) return true
-  //   return Object.keys(this.state.featPet).length === 0
-  // }
 
   isPetEmpty() {
     if(this.state.pet === '-') return false
@@ -121,6 +130,9 @@ class App extends Component {
       <div className="main-content">
 
         <Nav />
+
+        <Featured-pet getCatFeatPet={this.getCatFeatPet}
+                      getDogFeatPet={this.getDogFeatPet} />
 
         <PetCard pet={this.state.pet}
                  isPetEmpty={this.isPetEmpty()} />
