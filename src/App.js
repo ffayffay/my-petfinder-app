@@ -6,6 +6,7 @@ import Nav from './Components/Nav';
 import Footer from './Components/Footer';
 import adopt from './adopt.png';
 import FeaturedPet from './Components/Featured-pet.js';
+import AdvancedSearchForm from './Components/AdvancedSearchForm.js';
 
 class App extends Component {
   constructor() {
@@ -14,32 +15,96 @@ class App extends Component {
     this.state = {
       // used in isPetEmpty function to check if pet is equal to a pet
       pet: '-',
-      featCat: '-',
-      featDog: '-'
+      randomCat: '-',
+      randomDog: '-',
+      breeds: [],
+      searchData: {
+        animal: "Cat",
+        breed: "",
+        size: "M",
+        sex: "M",
+        location: "47130",
+        age: "Baby"
+      }
     }
   }
 
-
+  setBreeds(breeds) {
+    this.setState({
+      breeds: breeds
+    })
+  }
 
 // FEATURED PET ***************************************
   getCatFeatPet() {
-    jpp(`http://api.petfinder.com/pet.find?format=json&key=30813f445b233300ac28d89179cd71c7&animal=cat&location=47130`)
-      .then(res => console.log(res))
+    return jpp(`http://api.petfinder.com/pet.find?format=json&key=30813f445b233300ac28d89179cd71c7&animal=cat&location=47130`)
+      .then(res => {
+        let cats = res.petfinder.pets.pet
+        let randomIndex = Math.floor(Math.random() * cats.length)
+        let randomCat = cats[randomIndex]
+
+        this.setFeaturedCat(this.formatPetResponse(randomCat))
+      })
+      
   }
+    
 
   getDogFeatPet() {
-    jpp(`http://api.petfinder.com/pet.find?format=json&key=30813f445b233300ac28d89179cd71c7&animal=dog&location=47130`)
-      .then(res => console.log(res))
+    return jpp(`http://api.petfinder.com/pet.find?format=json&key=30813f445b233300ac28d89179cd71c7&animal=dog&location=47130`)
+      .then(res => {
+        let dogs = res.petfinder.pets.pet
+        let randomIndex = Math.floor(Math.random() * dogs.length)
+        let randomDog = dogs[randomIndex]
+
+        this.setFeaturedDog(this.formatPetResponse(randomDog))
+      })
+      
   }
 
-    setFeaturedPet(featPet) {
+  setFeaturedCat(randomCat) {
+      this.setState({
+        randomCat: randomCat
+      })
+    }
+
+  setFeaturedDog(randomDog) {
     this.setState({
-      featCat: featCat,
-      featDog: featDog
+      randomDog: randomDog
     })
-   }
+  }
 
 // ***************************************************
+
+// *************** ADVANCED SEARCH********************
+
+
+
+  getBreedList(animal) {
+    return jpp(`http://api.petfinder.com/breed.list?format=json&key=30813f445b233300ac28d89179cd71c7&animal=${animal}`)
+      .then(res => {
+        let rawBreeds = res.petfinder.breeds.breed
+        let breeds = rawBreeds.map(breed => breed['$t'])
+        
+        this.setBreeds(breeds)
+      })
+  }
+
+  getSearchPet(formData) {
+    let animal, breed = { formData }
+    return jpp(`http://api.petfinder.com/pet.find?format=json&key=30813f445b233300ac28d89179cd71c7&animal=${this.animal}&breed=${this.breed}&size=${this.size}&sex=${this.sex}&location=${this.location}&age=${this.age}`)
+  }
+
+  setSearchData = (e, value) => {
+    e.preventDefault();
+    this.setState({
+      searchData: {
+        ...this.state.searchData,
+        [value]: e.target.value
+      }
+    });
+  }
+
+//****************************************************
 
 
 // RANDOM PET ****************************************
@@ -62,20 +127,21 @@ class App extends Component {
     })
   }
 
+
   formatPetResponse(response) {
-    let pet = response.petfinder.pet;
     let photo;
     let shortDescrpt;
 
-    console.log(pet)
-    if (!pet) {
-      return {}
+    if (response.petfinder && response.petfinder.pet) {
+      var pet = response.petfinder.pet;
+    } else {
+      var pet = response
     }
 
-    let longDescrpt = pet.description['$t'] || "";
+    let longDescrpt = pet.description ? (pet.description['$t'] || "") : "";
 
- 
-// sets default image if pet has no photo
+   
+  // sets default image if pet has no photo
     if (pet.media && pet.media.photos && pet.media.photos.photo[2]) {
       console.log('has photo')
       photo = pet.media.photos.photo[2]['$t']
@@ -83,27 +149,31 @@ class App extends Component {
       photo = "https://www.rspcansw.org.au/wp-content/themes/noPhotoFound.png"
     }
 
-// checks length of description; displays 300 characters
+  // checks length of description; displays 300 characters
     if(longDescrpt && longDescrpt.length > 300) {
         shortDescrpt = longDescrpt.slice(0, 300) + '...'
     }
-
-// formatting the information wanted from response; setting alt defaults
+    
+    console.log(pet)
+    
+    if (!pet) {
+      return this.getPet
+    }
     return {
-      age: pet.age['$t'] || "Unknown.",
-      name: pet.name['$t'] || "very lovable!",
-      breed: pet.breeds.breed['$t'] || pet.animal['$t'],
-      description: pet.description['$t'] || "",
-      truncatedDescription: shortDescrpt || '',
-      picture: photo,
-      sex: pet.sex['$t'] || "N/A",
-      city: pet.contact.city['$t'] || "N/A",
-      state: pet.contact.state['$t'] || "N/A",
-      zip: pet.contact.zip['$t'] || "",
-      phone: pet.contact.phone['$t'] || "N/A",
-      email: pet.contact.email['$t'] || "N/A",
+      age: pet.age ? (pet.age['$t'] || "Not known.") : "",
+      name: pet.name ? (pet.name['$t'] || "very lovable!") : "",
+      breed: pet.breeds ? (pet.breeds.breed['$t'] || pet.animal['$t']) : "",
+      description: pet.description ? (pet.description['$t'] || "") : "",
+      picture: pet.media ? (pet.media.photos.photo[2]['$t'] || "Photo Coming Soon") : "",
+      sex: pet.sex ? (pet.sex['$t'] || "N/A") : "",
+      size: pet.size ? (pet.size['$t'] || "N/A") : "",
+      city: pet.contact ? (pet.contact.city['$t'] || "N/A") : "",
+      state: pet.contact ? (pet.contact.state['$t'] || "N/A") : "",
+      zip: pet.contact ? (pet.contact.zip['$t'] || "") : "",
+      phone: pet.contact ? (pet.contact.phone['$t'] || "N/A") : "",
+      email: pet.contact ? (pet.contact.email['$t'] || "N/A") : "",
 
-      }
+    }
   }
 
 
@@ -122,6 +192,8 @@ class App extends Component {
 
   componentDidMount() {
     this.getPet()
+    this.getCatFeatPet()
+    this.getDogFeatPet()
   }
 
 // renders main components of app
@@ -131,15 +203,23 @@ class App extends Component {
 
         <Nav />
 
-        <Featured-pet getCatFeatPet={this.getCatFeatPet}
-                      getDogFeatPet={this.getDogFeatPet} />
+        <FeaturedPet 
+          randomCat={ this.state.randomCat }
+          randomDog={ this.state.randomDog } />
 
-        <PetCard pet={this.state.pet}
-                 isPetEmpty={this.isPetEmpty()} />
+        <PetCard 
+          pet={ this.state.pet }
+          isPetEmpty={ this.isPetEmpty() } />
 
         <div className="button">
-          <button className="search-btn" onClick={() => this.getPet()}>Search</button>
+          <button className="search-btn" onClick={ () => this.getPet() }>Search</button>
         </div>
+
+        <AdvancedSearchForm
+         breeds={ this.state.breeds }
+         setSearchData={ this.setSearchData }
+         getSearchPet= { this.getSearchPet } 
+         getBreedList={ this.getBreedList } />
 
         <Footer />
       </div>
