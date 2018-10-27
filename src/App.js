@@ -7,6 +7,7 @@ import Footer from './Components/Footer';
 import adopt from './adopt.png';
 import FeaturedPet from './Components/Featured-pet.js';
 import AdvancedSearchForm from './Components/AdvancedSearchForm.js';
+import { get } from 'lodash';
 
 class App extends Component {
   constructor() {
@@ -19,21 +20,18 @@ class App extends Component {
       randomDog: '-',
       breeds: [],
       searchData: {
-        animal: "Cat",
-        breed: "",
+        animal: "dog",
+        breed: "Yorkshire Terrier",
         size: "M",
         sex: "M",
         location: "47130",
         age: "Baby"
       }
     }
+
+    this.getBreedList()
   }
 
-  setBreeds(breeds) {
-    this.setState({
-      breeds: breeds
-    })
-  }
 
 // FEATURED PET ***************************************
   getCatFeatPet() {
@@ -79,29 +77,42 @@ class App extends Component {
 
 
 
-  getBreedList(animal) {
-    return jpp(`http://api.petfinder.com/breed.list?format=json&key=30813f445b233300ac28d89179cd71c7&animal=${animal}`)
+  getBreedList = () => {
+    console.log(this)
+    return jpp(`http://api.petfinder.com/breed.list?format=json&key=30813f445b233300ac28d89179cd71c7&animal=${this.state.searchData.animal}`)
       .then(res => {
-        let rawBreeds = res.petfinder.breeds.breed
+        console.log(res)
+        let rawBreeds = get(res, 'petfinder.breeds.breed', null);
+
+        if (rawBreeds === null) return console.error('oopss')
         let breeds = rawBreeds.map(breed => breed['$t'])
         
         this.setBreeds(breeds)
       })
   }
 
-  getSearchPet(formData) {
-    let animal, breed = { formData }
-    return jpp(`http://api.petfinder.com/pet.find?format=json&key=30813f445b233300ac28d89179cd71c7&animal=${this.animal}&breed=${this.breed}&size=${this.size}&sex=${this.sex}&location=${this.location}&age=${this.age}`)
+   setBreeds(breeds) {
+    this.setState({
+      breeds: breeds
+    })
   }
 
-  setSearchData = (e, value) => {
+  getSearchPet = () => {
+    let formData = this.state.searchData
+    let { animal, breed, size, sex, location, age } = formData
+    return jpp(`http://api.petfinder.com/pet.find?format=json&key=30813f445b233300ac28d89179cd71c7&animal=${animal}&breed=${breed}&size=${size}&sex=${sex}&location=${location}&age=${age}`)
+      .then(res => res.petfinder.pets.pet.map(this.formatPetResponse))
+      .then(res => console.log(res))
+  }
+
+  setSearchData = (e, value, cb) => {
     e.preventDefault();
     this.setState({
       searchData: {
         ...this.state.searchData,
         [value]: e.target.value
       }
-    });
+    }, cb);
   }
 
 //****************************************************
@@ -164,7 +175,7 @@ class App extends Component {
       name: pet.name ? (pet.name['$t'] || "very lovable!") : "",
       breed: pet.breeds ? (pet.breeds.breed['$t'] || pet.animal['$t']) : "",
       description: pet.description ? (pet.description['$t'] || "") : "",
-      picture: pet.media ? (pet.media.photos.photo[2]['$t'] || "Photo Coming Soon") : "",
+      picture: get(pet, 'media.photos.photo[2]["$t"]', "https://www.rspcansw.org.au/wp-content/themes/noPhotoFound.png"),
       sex: pet.sex ? (pet.sex['$t'] || "N/A") : "",
       size: pet.size ? (pet.size['$t'] || "N/A") : "",
       city: pet.contact ? (pet.contact.city['$t'] || "N/A") : "",
@@ -217,9 +228,11 @@ class App extends Component {
 
         <AdvancedSearchForm
          breeds={ this.state.breeds }
+         formData={ this.formData }
          setSearchData={ this.setSearchData }
          getSearchPet= { this.getSearchPet } 
-         getBreedList={ this.getBreedList } />
+         getBreedList={ this.getBreedList } 
+         getSearchPet={ this.getSearchPet.bind(this) }/>
 
         <Footer />
       </div>

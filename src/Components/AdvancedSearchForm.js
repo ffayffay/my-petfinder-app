@@ -2,33 +2,37 @@ import React from 'react';
 import './AdvancedSearchForm.css';
 
 export default (props) => {
-	console.log(props)
+	
 	return (
 		<div className="form-wrap">
-			<form className="form">
+			<form className="form" onSubmit={ (e) => {
+					e.preventDefault()
+					props.getSearchPet()
+				} }>
 				<div className="search-form-item">
 					<label>Select Animal Type</label>
 					<select name="animal" value={props.value} onChange={(e) => { 
-						 	props.setSearchData(e, "animal") 
+						 	props.setSearchData(e, "animal", props.getBreedList)	
 						}
 					}>
-						<option value="Dog">Dog</option>
-						<option value="Cat">Cat</option>
-						<option value="Smallfurry">Small Furry</option>
-						<option value="Bird">Bird</option>
-						<option value="Reptile">Reptile</option>
-						<option value="Horse">Horse</option>
-						<option value="Barnyard">Barnyard</option>
+						<option value="dog">Dog</option>
+						<option value="cat">Cat</option>
+						<option value="smallfurry">Small Furry</option>
+						<option value="bird">Bird</option>
+						<option value="reptile">Reptile</option>
+						<option value="horse">Horse</option>
+						<option value="barnyard">Barnyard</option>
 					</select>
 				</div>
 
 				<div className="search-form-item">
 					<label>Select Animal Breed</label>
 					<select name="breed" value={props.value} onChange={(e) => props.setSearchData(e, "breed")}>
-						{/*
+						{
 							props.breeds.map((breed, index) =>
 								<option value={ breed } key={index}>{ breed }</option>)
-						*/}
+							
+						}
 					</select>
 				</div>
 
@@ -66,7 +70,7 @@ export default (props) => {
 					<input type="text" name="location" value={props.value} onChange={(e) => props.setSearchData(e, "location")}/>
 				</div>
 
-				<button className="search-submit-button" onClick={props.getSearchPet}>Submit</button>
+				<button className="search-submit-button">Submit</button>
 			</form>
 		</div>
 	)
