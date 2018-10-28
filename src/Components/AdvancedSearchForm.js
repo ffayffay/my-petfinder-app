@@ -6,12 +6,14 @@ export default (props) => {
 	return (
 		<div className="form-wrap">
 			<form className="form" onSubmit={ (e) => {
+// When the form is submitted the getSearchPet function is called
 					e.preventDefault()
 					props.getSearchPet()
 				} }>
 				<div className="search-form-item">
 					<label>Select Animal Type</label>
 					<select name="animal" value={props.value} onChange={(e) => { 
+// When the value of the select element is change the state is set for formData.animal to new value and getBreedList function is called
 						 	props.setSearchData(e, "animal", props.getBreedList)	
 						}
 					}>
@@ -31,7 +33,7 @@ export default (props) => {
 						{
 							props.breeds.map((breed, index) =>
 								<option value={ breed } key={index}>{ breed }</option>)
-							
+// The map() method is used on the breeds array to create an options element for each breed type in the array							
 						}
 					</select>
 				</div>
@@ -75,26 +77,3 @@ export default (props) => {
 		</div>
 	)
 }
-
-
-
-
-// ********** WRITTING OUT IDEAS/NOT LEAVING THIS HERE ;) **************************************************
-
-// makeSearchRequest(pet) {
-// 	const form = document.getElementById('search-form');
-// 	const animal = form.animal.value;
-// 	const breed = form.breed.value;
-// 	const size = form.size.value;
-// 	const sex = form.sex.value;
-// 	const age = form.age.value;
-// 	const zipCode = form.zipcode.value;
-// 	const url = `http://api.petfinder.com/pet.getRandom?format=json&key=30813f445b233300ac28d89179cd71c7&animal=${animal}&location=${zipCode}`;
-
-// 	return jpp(url)
-// 		.then(response => response.petfinder.petIds.id['$t'])
-// 		.then(id => getPetDetails(id))
-// }
-
-// BREED :::
-// `http://api.petfinder.com/breed.list?format=json&key=30813f445b233300ac28d89179cd71c7&animal=${animal}`

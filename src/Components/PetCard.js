@@ -11,5 +11,5 @@ export default (props) => (
     </div>
 )
 
-// handles weather or not NoPetCardInfo component is displayed if no pet is returned
-// or displays PetCardInfo component if pet is returned
+// Using a ternary operator to display the NoPetCardInfo component if isPetEmpty is equal to true
+// othewise the PetCardInfo component is displayed

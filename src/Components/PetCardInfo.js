@@ -22,7 +22,10 @@ export default class PetCardInfo extends React.Component {
 <div className="card-info">
 	{this.props.pet !== '-'
 		? (<div className="pet-card-content-wrap">
-		<div className="card-img"><img src={this.props.pet.picture} /></div>
+				<div className="card-img">
+					<img src={this.props.pet.picture}
+						 alt="https://www.rspcansw.org.au/wp-content/themes/noPhotoFound.png" />
+				</div>
 		<div className="pet-info">
 			<h1><small>Hi, I'm </small>{this.props.pet.name}</h1>
 			<ul>
